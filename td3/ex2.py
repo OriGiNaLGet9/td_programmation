@@ -42,12 +42,15 @@ class Tree:
     def __eq__(self, t):
         if self.depth() != t.depth():
             return False
-        if self.nb_children() != t.nb_children():
+        
+        if len(self.children) != len(t.children):
             return False
+        
         if len(self.children) == 0 :
             if self.label == t.label:
                 return True
             return False
+        
         for i in range(len(self.children)): 
             if (self.children[i] != t.children[i]):
                 return False
@@ -56,13 +59,26 @@ class Tree:
     def deriv(self, var):
         if self.label == var:
             return Tree("1")
-        elif (self.label != "+")&(self.label != "*"):
+        elif (self.label != "+")and(self.label != "*"):
             return Tree("0")
+        
         if self.label == "+":
-            return Tree("+",*[t.deriv(var) for t in self.children])
-        #if self.label =="*":
-            #return Tree("+", 
-        #je ne sais pas comment faire pour la dérivée d'une multiplication
+            t1 = []
+            for t in self.children:
+                t1.append(t.deriv(var)) 
+            return Tree("+", *t1)
+        
+        if self.label == "*":
+            t1 = Tree("*", [self.children[0].deriv(var), self.children[1]])
+            t2 = Tree("*", [self.children[0], self.children[1].deriv(var)])
+            t3 = Tree("+", t1, t2)
+            return t3
+"""Les fonctions de test renvoient toutes la même erreur mais je n'arrive pas à trouver pourquoi
+j'ai l'impression que ma fonction renvoie bien un arbre et pas une chaine de caractères pourtant"""
+   
+       
+            
+        
 
 # -*- coding: utf-8 -*-
 
@@ -124,6 +140,32 @@ class TestTree(unittest.TestCase):
 
         self.assertEqual(a1, a2)
         self.assertEqual(fab1, fab2)
+
+    def test_deriv_constant(self):
+        X = Tree('X')
+        a = Tree('a')
+        zero = Tree('0')
+        self.assertEqual(a.deriv(X), zero)
+        self.assertEqual(zero.deriv(X), zero)
+    
+    def test_deriv_X(self):
+        X = Tree('X')
+        Y = Tree('Y')
+        zero = Tree('0')
+        un = Tree('1')
+    
+        self.assertEqual(X.deriv(X), un)
+        self.assertEqual(Y.deriv(X), zero)
+    
+    def test_deriv_addition(self):
+        X = Tree('X')
+        zero = Tree('0')
+        un = Tree('1')
+    
+        self.assertEqual(Tree('+', X, X).deriv(X), Tree('+', un, un))
+        self.assertEqual(Tree('+', X, un).deriv(X), Tree('+', un, zero))
+    
+        
         
 #========= MAIN 
 
@@ -148,7 +190,10 @@ print(t1.__eq__(t4))
 print(t1.__eq__(t3))
 
 t5 = Tree("+", Tree("1"), Tree("X"))
-print(str(t5.deriv("X")))
-print(str(t5))
+print("la fonction de base est :", t5)
+print("la derivee est : ", t5.deriv("X"))
+
+t6 = Tree("*", Tree("2"), Tree("X"))
+print(t6.deriv("X"))
 
 unittest.main()
