@@ -26,7 +26,7 @@ class Tree:
         
     def depth(self):
         if not self.is_leaf():
-            return (1 + max([i.depth() for i in self.children]))
+            return (1 + max([i.depth() for i in self.achildren()]))
         return 0
 
     def __str__(self):
@@ -42,21 +42,19 @@ class Tree:
     def __eq__(self, t):
         if self.depth() != t.depth():
             return False
-        
         if len(self.children) != len(t.children):
             return False
-        
         if len(self.children) == 0 :
             if self.label == t.label:
                 return True
             return False
-        
         for i in range(len(self.children)): 
             if (self.children[i] != t.children[i]):
                 return False
         return True       
 
     def deriv(self, var):
+        ##########################################################################
         if self.label == var:
             return Tree("1")
         elif (self.label != "+")and(self.label != "*"):
@@ -69,8 +67,8 @@ class Tree:
             return Tree("+", *t1)
         
         if self.label == "*":
-            t1 = Tree("*", [self.children[0].deriv(var), self.children[1]])
-            t2 = Tree("*", [self.children[0], self.children[1].deriv(var)])
+            t1 = Tree("*", self.children[0].deriv(var), self.children[1])
+            t2 = Tree("*", self.children[0], self.children[1].deriv(var))
             t3 = Tree("+", t1, t2)
             return t3
 """Les fonctions de test renvoient toutes la même erreur mais je n'arrive pas à trouver pourquoi
@@ -145,25 +143,25 @@ class TestTree(unittest.TestCase):
         X = Tree('X')
         a = Tree('a')
         zero = Tree('0')
-        self.assertEqual(a.deriv(X), zero)
-        self.assertEqual(zero.deriv(X), zero)
+        self.assertEqual(a.deriv("X"), zero)
+        self.assertEqual(zero.deriv("X"), zero)
     
     def test_deriv_X(self):
         X = Tree('X')
         Y = Tree('Y')
         zero = Tree('0')
         un = Tree('1')
-    
-        self.assertEqual(X.deriv(X), un)
-        self.assertEqual(Y.deriv(X), zero)
+        #########################################################################
+        self.assertEqual(X.deriv("X"), un)
+        self.assertEqual(Y.deriv("X"), zero)
     
     def test_deriv_addition(self):
         X = Tree('X')
         zero = Tree('0')
         un = Tree('1')
     
-        self.assertEqual(Tree('+', X, X).deriv(X), Tree('+', un, un))
-        self.assertEqual(Tree('+', X, un).deriv(X), Tree('+', un, zero))
+        self.assertEqual(Tree('+', X, X).deriv("X"), Tree('+', un, un))
+        self.assertEqual(Tree('+', X, un).deriv("X"), Tree('+', un, zero))
     
         
         
