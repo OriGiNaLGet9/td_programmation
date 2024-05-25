@@ -67,9 +67,9 @@ class fenetre:
             for j in range(COLUMS):
                 index = i * COLUMS + j
                 pos.append([10 + j * 10, 10 + i * 10])
-                if j < COLUMS - 1 and random() > 1 - 0.4:
+                if j < COLUMS - 1 and random() < 0.4:
                     graph[index].append(index + 1) 
-                if i < LINES - 1 and random() > 1 - 0.4:
+                if i < LINES - 1 and random() < 0.4:
                     graph[index].append(index + COLUMS)
         return graph, pos
     
@@ -87,5 +87,7 @@ def color_generator():
 
 ##-----main-----##
 if __name__=='__main__':
-
     fenetre().run()
+    """
+    autour de p=0.5 on remarque qu'une couleur devient grandement majoritaire à chaque fois
+    """
