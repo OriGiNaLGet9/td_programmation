@@ -4,7 +4,7 @@ import struct
 
 path = "the_wall.wav"
 
-##-----fonctions-----#
+##-----fonctions-----##
 
 def recup_data(path):
     f = open(path, "rb")
@@ -48,10 +48,25 @@ def recreer_music2(header, voie1, voie2):
             f.write(struct.pack("h", voie1[i]))
             f.write(struct.pack("h", voie2[i]))
 
+def recreer_music3(header, voie1, voie2):
+    with open("test_q4.wav", "wb") as f:
+        f.write(header)
+        for i in range(len(voie1)-1):
+            f.write(struct.pack("h", voie1[i]))
+            moy1 = max(min((voie1[i] + voie1[i + 1]) // 2, 32767), -32768) #on s'assure que l'on ne dépasse jamais la valeur max pour le nombre moy1
+            f.write(struct.pack("h", moy1))
+            f.write(struct.pack("h", voie2[i]))
+            moy2 = max(min((voie2[i] + voie2[i + 1]) // 2, 32767), -32768)
+            f.write(struct.pack("h", moy2))
+        f.write(struct.pack("h", voie1[len(voie1)-1]))
+        f.write(struct.pack("h", voie2[len(voie2)-1]))
+
 ##-----main-----##
 
-data = recup_data(path)[0]
-header = recup_data(path)[1]
-print(len(recup_echant(data)[0]))
-recreer_music(header, recup_echant(data)[0], recup_echant(data)[1])
-recreer_music2(header, recup_enchant2(data)[0], recup_enchant2(data)[1])
+if __name__=='__main__':
+    data = recup_data(path)[0]
+    header = recup_data(path)[1]
+    print(len(recup_echant(data)[0]))
+    recreer_music(header, recup_echant(data)[0], recup_echant(data)[1])
+    recreer_music2(header, recup_enchant2(data)[0], recup_enchant2(data)[1])
+    recreer_music3(header, recup_echant(data)[0], recup_echant(data)[1])
